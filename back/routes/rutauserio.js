@@ -2,7 +2,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const isAuthenticate = require("../autenticacion");
+const isAuthenticated = require("../autenticacion");
 //Creating express router
 const route = express.Router();
 //Importing userModel
@@ -47,7 +47,6 @@ route.post("/register", async (req, res) => {
 });
 //Creating login routes
 route.post("/login", async (req, res) => {
-  console.log("Request Body:", req.body);
   try {
     const { email, password } = req.body;
     //Check emptyness of the incoming data
@@ -88,15 +87,15 @@ route.post("/login", async (req, res) => {
 });
 
 //Creating user routes to fetch users data
-route.get("/user/_id", isAuthenticate, async (req, res) => {
+route.get("/user", isAuthenticated, async (req, res) => {
   try {
-    const user = await userModel.find(_id);
+    const user = await userModel.find(req.user._id);
     if (!user) {
       return res.json({ message: "No user found" });
     }
     return res.json({ user: user });
   } catch (error) {
-    return res.json({ error: error });
+    return res.json("error: " + error);
   }
 });
 
