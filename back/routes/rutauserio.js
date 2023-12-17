@@ -3,6 +3,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../autenticacion");
+
 //Creating express router
 const route = express.Router();
 //Importing userModel
@@ -93,6 +94,7 @@ route.get("/user", isAuthenticated, async (req, res) => {
     if (!user) {
       return res.json({ message: "No user found" });
     }
+    console.log(user)
     return res.json({ user: user });
   } catch (error) {
     return res.json("error: " + error);

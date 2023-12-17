@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Card from "react-bootstrap/Card";
-const Login = () => {
+
+const Login = ({ onLogin }) => {
+  const defaultUrl = "http://localhost:3007/api/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  const onButtonClick = () => {
+  const onButtonClick = async () => {
     setEmailError("");
     setPasswordError("");
 
@@ -29,11 +28,57 @@ const Login = () => {
       return;
     }
 
-    if (password.length < 7) {
+    if (password.length < 3) {
       setPasswordError("The password must be 8 characters or longer");
       return;
     }
+
+    const data = { email, password };
+    try {
+      const loginResponse = await postJSON(data, 'POST', 'login');
+
+      if (loginResponse.success) {
+        // Almacena dinámicamente el token en el estado
+        onLogin(loginResponse.token);
+
+        console.log("Login successful!");
+
+        const userResponse = await postJSON(null, 'GET', 'user', loginResponse.token);
+        navigate("/user", { state: userResponse.user });
+      } else {
+        console.log(loginResponse.error); 
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
   };
+
+  async function postJSON(data, metodo, endpoint, token) {
+    try {
+      const url = endpoint ? `${defaultUrl}${endpoint}` : defaultUrl;
+
+      const requestOptions = {
+        method: metodo,
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`,
+        },
+      };
+
+      if (metodo !== 'GET') {
+        requestOptions.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(url, requestOptions);
+      const result = await response.json();
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return (
     <div className={"mainContainer"}>
       <div className={"titleContainer"}>
@@ -71,4 +116,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;
