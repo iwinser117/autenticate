@@ -38,12 +38,8 @@ const Login = ({ onLogin }) => {
       const loginResponse = await postJSON(data, 'POST', 'login');
 
       if (loginResponse.success) {
-        // Almacena dinámicamente el token en el estado
-        onLogin(loginResponse.token);
-
-        console.log("Login successful!");
-
         const userResponse = await postJSON(null, 'GET', 'user', loginResponse.token);
+        onLogin(null, userResponse.user);
         navigate("/user", { state: userResponse.user });
       } else {
         console.log(loginResponse.error); 

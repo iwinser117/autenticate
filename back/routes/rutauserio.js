@@ -12,14 +12,11 @@ const userModel = require("../models/useario");
 //Creating register route
 route.post("/register", async (req, res) => {
   try {
-    console.log(req.body);
     const name = req.body.name;
     const password = req.body.password;
     const email = req.body.email;
-    console.log(req);
     //Check emptyness of the incoming data
     if (!name || !email || !password) {
-      console.log("Datos");
       return res.json({ message: "Please enter all the details" });
     }
 
@@ -94,7 +91,6 @@ route.get("/user", isAuthenticated, async (req, res) => {
     if (!user) {
       return res.json({ message: "No user found" });
     }
-    console.log(user)
     return res.json({ user: user });
   } catch (error) {
     return res.json("error: " + error);

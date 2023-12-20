@@ -2,17 +2,21 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Home = (props) => {
-  const { loggedIn, email } = props;
+  const { loggedIn, email, setLoggedIn } = props;
   const navigate = useNavigate();
-
   const onButtonClick = () => {
     if (loggedIn) {
-        localStorage.removeItem("user")
-        props.setLoggedIn(false)
+        console.log(loggedIn)
     } else {
         navigate("/login")
+        console.log(loggedIn)
     }
-
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("userData");
+    localStorage.removeItem("token");
+    setLoggedIn(false);
+    navigate("/login");
   };
 
   return (
@@ -23,16 +27,21 @@ const Home = (props) => {
       <div>This is the home page.</div>
       <div className={"buttonContainer"}>
         {loggedIn ? (
-          <Link to="/logout">
-            <input className={"inputButton"} type="button" value="Log out" />
-          </Link>
+          <React.Fragment>
+            <input
+              className={"inputButton"}
+              type="button"
+              value="Log out"
+              onClick={handleLogout}
+            />
+            <div>Your email address is {email}</div>
+          </React.Fragment>
         ) : (
           <Link to="/login">
             <input className={"inputButton"} type="button" value="Log in" />
           </Link>
         )}
-        {loggedIn ? <div>Your email address is {email}</div> : <div />}
-      </div>
+      </div>  
     </div>
   );
 };

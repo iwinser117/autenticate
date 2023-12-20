@@ -1,5 +1,8 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useState } from "react";
+// App.jsx
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 import "./App.css";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
@@ -7,12 +10,41 @@ import User from "./components/Users.jsx";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const handleLogin = (token) => {
-    // Implementa la lógica para manejar el inicio de sesión aquí
-    console.log("Login successful, token:", token);
-    // Puedes almacenar el token en el estado global, localStorage, etc.
+  const [userData, setUserData] = useState(null);
+
+  const handleLogin = (token, userData) => {
+    Cookies.set("token", token);
+    localStorage.setItem("userData", JSON.stringify(userData));
+    setUserData(userData);
+    setLoggedIn(true);
   };
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    localStorage.removeItem("userData");
+    setLoggedIn(false);
+  };
+
+  useEffect(() => {
+    const storedToken = Cookies.get("token");
+    const storedUserData = localStorage.getItem("userData");
+    const parsedUserData =
+      storedUserData !== "undefined" ? JSON.parse(storedUserData) : null;
+
+    if (storedToken !== 'null' && parsedUserData) {
+      const decodedToken = jwtDecode(storedToken);
+      const currentTime = Date.now() / 1000;
+
+      if (decodedToken.exp && decodedToken.exp < currentTime) {
+        // Token ha expirado, realiza el logout automáticamente
+        handleLogout();
+      } else {
+        // Token válido, establece el estado loggedIn
+        setLoggedIn(true);
+        setUserData(parsedUserData);
+      }
+    }
+  }, []);
 
   return (
     <div className="App">
@@ -21,17 +53,18 @@ function App() {
           <Route
             path="/"
             element={
-              <Home
-                email={email}
-                loggedIn={loggedIn}
-                setLoggedIn={setLoggedIn}
-              />
+              loggedIn ? (
+                <Home
+                  loggedIn={loggedIn}
+                  email={userData ? userData[0]?.email : null}
+                  setLoggedIn={setLoggedIn}
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
-          <Route
-            path="/login"
-            element={<Login onLogin={handleLogin} />}
-          />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/user" element={<User />} />
         </Routes>
       </BrowserRouter>

@@ -3,8 +3,11 @@ import { useLocation } from "react-router-dom";
 
 const User = () => {
   const location = useLocation();
-
-  const userData = location?.state[0];
+  const userData =
+    (location && location.state && location.state[0]) ||
+    (localStorage.getItem("userData") &&
+      JSON.parse(localStorage.getItem("userData"))[0]) ||
+    null;
 
   return (
     <div>
