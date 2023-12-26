@@ -16,7 +16,7 @@ const Home = (props) => {
     localStorage.removeItem("userData");
     localStorage.removeItem("token");
     setLoggedIn(false);
-    navigate("/login");
+    navigate("/");
   };
 
   return (

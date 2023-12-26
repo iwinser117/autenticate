@@ -13,7 +13,7 @@ function App() {
   const [userData, setUserData] = useState(null);
 
   const handleLogin = (token, userData) => {
-    Cookies.set("token", token);
+    //Cookies.set("token", token);
     localStorage.setItem("userData", JSON.stringify(userData));
     setUserData(userData);
     setLoggedIn(true);
@@ -31,7 +31,7 @@ function App() {
     const parsedUserData =
       storedUserData !== "undefined" ? JSON.parse(storedUserData) : null;
 
-    if (storedToken !== 'null' && parsedUserData) {
+    if (storedToken !== "null" && storedToken !== undefined && storedToken && parsedUserData) {
       const decodedToken = jwtDecode(storedToken);
       const currentTime = Date.now() / 1000;
 
@@ -45,6 +45,7 @@ function App() {
       }
     }
   }, []);
+  console.log(loggedIn);
 
   return (
     <div className="App">
@@ -53,15 +54,11 @@ function App() {
           <Route
             path="/"
             element={
-              loggedIn ? (
-                <Home
-                  loggedIn={loggedIn}
-                  email={userData ? userData[0]?.email : null}
-                  setLoggedIn={setLoggedIn}
-                />
-              ) : (
-                <Navigate to="/login" />
-              )
+              <Home
+                loggedIn={loggedIn}
+                email={userData ? userData[0]?.email : null}
+                setLoggedIn={setLoggedIn}
+              />
             }
           />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />

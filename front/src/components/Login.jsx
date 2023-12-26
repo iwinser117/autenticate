@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
+import toast, { Toaster } from "react-hot-toast";
 
 const Login = ({ onLogin }) => {
   const defaultUrl = "http://localhost:3007/api/";
@@ -18,7 +21,7 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       setEmailError("Please enter a valid email");
       return;
     }
@@ -35,14 +38,26 @@ const Login = ({ onLogin }) => {
 
     const data = { email, password };
     try {
-      const loginResponse = await postJSON(data, 'POST', 'login');
+      const loginResponse = await postJSON(data, "POST", "login");
 
       if (loginResponse.success) {
-        const userResponse = await postJSON(null, 'GET', 'user', loginResponse.token);
+        const userResponse = await postJSON(
+          null,
+          "GET",
+          "user",
+          loginResponse.token
+        );
         onLogin(null, userResponse.user);
-        navigate("/user", { state: userResponse.user });
+        setTimeout(() => {
+          navigate("/user", { state: userResponse.user });
+        }, 1000);
+        toast.success('Ingreso Exitoso.',{
+          duration: 1000,
+        });
       } else {
-        console.log(loginResponse.error); 
+        Cookies.remove("token");
+
+        toast.error("Correo o Contraseña incorrecta.");
       }
     } catch (error) {
       console.log("Error:", error);
@@ -55,14 +70,14 @@ const Login = ({ onLogin }) => {
 
       const requestOptions = {
         method: metodo,
-        credentials: 'include',
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
 
-      if (metodo !== 'GET') {
+      if (metodo !== "GET") {
         requestOptions.body = JSON.stringify(data);
       }
 
@@ -109,6 +124,7 @@ const Login = ({ onLogin }) => {
           value={"Log in"}
         />
       </div>
+      <Toaster />
     </div>
   );
 };
