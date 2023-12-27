@@ -1,7 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
-import toast, { Toaster } from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
 
 const User = () => {
   const location = useLocation();
@@ -13,17 +15,28 @@ const User = () => {
 
   let token = Cookies.get("token");
 
-  if (!token) {
-    setTimeout(() => {
-      toast.error("Por favor inicie sesión.");
-    }, 1000);
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 3000);
-  }
+  function miFuncion() {
+    if (!token) {
+      setTimeout(() => {
+        window.location.href = "/";
+        return;
+      }, 5000);
+      return;
+    }
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
 
+    if (decodedToken.exp && decodedToken.exp < currentTime) {
+      setTimeout(() => {
+        window.location.href = "/";
+        return;
+      }, 5000);
+    }
+    setTimeout(miFuncion, 1000);
+  }
+  miFuncion();
   return (
-    <div>
+    <div className="mainContainer">
       {userData && token ? (
         <div>
           <h1>User Information</h1>
@@ -35,10 +48,13 @@ const User = () => {
       ) : (
         <>
           <h1>Sin datos de Sesión</h1>
+
           <p>Redirigiendo a Pagina de Inicio</p>
+          <Link to="/login">
+            <input className={"inputButton"} type="button" value="Log in" />
+          </Link>
         </>
       )}
-      <Toaster />
     </div>
   );
 };

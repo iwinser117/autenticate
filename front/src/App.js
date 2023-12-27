@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
@@ -37,6 +38,7 @@ function App() {
 
       if (decodedToken.exp && decodedToken.exp < currentTime) {
         // Token ha expirado, realiza el logout automáticamente
+        toast.error("Por favor inicie sesión.");
         handleLogout();
       } else {
         // Token válido, establece el estado loggedIn
@@ -63,8 +65,10 @@ function App() {
           />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/user" element={<User />} />
+          <Route path="/register" element={<Login />} />
         </Routes>
       </BrowserRouter>
+          <Toaster />
     </div>
   );
 }

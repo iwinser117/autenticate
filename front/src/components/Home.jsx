@@ -37,9 +37,16 @@ const Home = (props) => {
             <div>Your email address is {email}</div>
           </React.Fragment>
         ) : (
-          <Link to="/login">
+         <>
+         <Link to="/login">
             <input className={"inputButton"} type="button" value="Log in" />
           </Link>
+          O 
+          <Link to="/register">
+            <input className={"inputButton"} type="button" value="Sing Up" />
+          </Link>
+         </> 
+          
         )}
       </div>  
     </div>
