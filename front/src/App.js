@@ -32,13 +32,17 @@ function App() {
     const parsedUserData =
       storedUserData !== "undefined" ? JSON.parse(storedUserData) : null;
 
-    if (storedToken !== "null" && storedToken !== undefined && storedToken && parsedUserData) {
+    if (
+      storedToken !== "null" &&
+      storedToken !== undefined &&
+      storedToken &&
+      parsedUserData
+    ) {
       const decodedToken = jwtDecode(storedToken);
       const currentTime = Date.now() / 1000;
 
       if (decodedToken.exp && decodedToken.exp < currentTime) {
-        // Token ha expirado, realiza el logout automáticamente
-        toast.error("Por favor inicie sesión.");
+        toast.error("La sesión ha caducado.");
         handleLogout();
       } else {
         // Token válido, establece el estado loggedIn
@@ -47,7 +51,6 @@ function App() {
       }
     }
   }, []);
-  console.log(loggedIn);
 
   return (
     <div className="App">
@@ -68,7 +71,7 @@ function App() {
           <Route path="/register" element={<Login />} />
         </Routes>
       </BrowserRouter>
-          <Toaster />
+      <Toaster />
     </div>
   );
 }

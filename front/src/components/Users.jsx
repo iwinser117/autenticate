@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
 import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -12,15 +11,13 @@ const User = () => {
     (localStorage.getItem("userData") &&
       JSON.parse(localStorage.getItem("userData"))[0]) ||
     null;
-
   let token = Cookies.get("token");
 
   function miFuncion() {
     if (!token) {
       setTimeout(() => {
         window.location.href = "/";
-        return;
-      }, 5000);
+      }, 3000);
       return;
     }
     const decodedToken = jwtDecode(token);
@@ -29,8 +26,8 @@ const User = () => {
     if (decodedToken.exp && decodedToken.exp < currentTime) {
       setTimeout(() => {
         window.location.href = "/";
-        return;
-      }, 5000);
+      }, 3000);
+      return;
     }
     setTimeout(miFuncion, 1000);
   }
@@ -43,16 +40,11 @@ const User = () => {
           <p>Name: {userData.name}</p>
           <p>User ID: {userData._id}</p>
           <p>Email: {userData.email}</p>
-          {/* Otros datos del usuario */}
         </div>
       ) : (
         <>
           <h1>Sin datos de Sesión</h1>
-
           <p>Redirigiendo a Pagina de Inicio</p>
-          <Link to="/login">
-            <input className={"inputButton"} type="button" value="Log in" />
-          </Link>
         </>
       )}
     </div>

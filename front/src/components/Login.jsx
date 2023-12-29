@@ -7,7 +7,6 @@ import toast, { Toaster } from "react-hot-toast";
 const Login = ({ onLogin }) => {
   const location = useLocation();
   const rutaActual = location.pathname;
-  console.log(rutaActual);
   const defaultUrl = "http://localhost:3007/api/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,27 +15,38 @@ const Login = ({ onLogin }) => {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  const onButtonClick = async () => {
+  const validateInput = () => {
     setEmailError("");
     setPasswordError("");
 
     if ("" === email) {
       setEmailError("Please enter your email");
-      return;
+      return false;
     }
 
     if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       setEmailError("Please enter a valid email");
-      return;
+      return false;
     }
 
     if ("" === password) {
       setPasswordError("Please enter a password");
-      return;
+      return false;
     }
 
     if (password.length < 3) {
       setPasswordError("The password must be 8 characters or longer");
+      return false;
+    }
+
+    return true;
+  };
+
+  const onButtonClick = async () => {
+    setEmailError("");
+    setPasswordError("");
+
+    if (!validateInput()) {
       return;
     }
 
@@ -71,27 +81,10 @@ const Login = ({ onLogin }) => {
     setEmailError("");
     setPasswordError("");
 
-    if ("" === email) {
-      setEmailError("Please enter your email");
+    if (!validateInput()) {
       return;
     }
 
-    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError("Please enter a valid email");
-      return;
-    }
-
-    if ("" === password) {
-      setPasswordError("Please enter a password");
-      return;
-    }
-
-    if (password.length < 3) {
-      setPasswordError("The password must be 8 characters or longer");
-      return;
-    }
-
-    // Puedes definir los datos necesarios para la creación de un nuevo registro aquí
     const newData = {
       name,
       email,
@@ -106,7 +99,9 @@ const Login = ({ onLogin }) => {
           duration: 1000,
         });
         setTimeout(() => {
-          navigate("/user", { state: createResponse.data });
+          const data = [];
+          data.push(createResponse.data);
+          navigate("/user", { state: data });
         }, 1000);
       } else {
         createResponse?.message
@@ -153,19 +148,22 @@ const Login = ({ onLogin }) => {
       <div className="inputContainer">
         {!(rutaActual === "/login") ? (
           <>
+            <label className="inputLabel">Name</label>
             <input
+              type="text"
               value={name}
               placeholder="Enter your name"
               onChange={(ev) => setName(ev.target.value)}
               className={"inputBox"}
             />
-            <label className="errorName"></label>
           </>
         ) : null}
       </div>
       <br />
       <div className={"inputContainer"}>
+        <label className="inputLabel">Email</label>
         <input
+          type="text"
           value={email}
           placeholder="Enter your email here"
           onChange={(ev) => setEmail(ev.target.value)}
@@ -175,7 +173,9 @@ const Login = ({ onLogin }) => {
       </div>
       <br />
       <div className={"inputContainer"}>
+        <label className="inputLabel">Password</label>
         <input
+          type="password"
           value={password}
           placeholder="Enter your password here"
           onChange={(ev) => setPassword(ev.target.value)}

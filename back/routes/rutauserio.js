@@ -4,9 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../autenticacion");
 
-//Creating express router
 const route = express.Router();
-//Importing userModel
 const userModel = require("../models/useario");
 
 //Creating register route
@@ -34,12 +32,12 @@ route.post("/register", async (req, res) => {
     const token = await jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
       expiresIn: process.env.JWT_EXPIRE,
     });
-    //return res.cookie({ token: token }).json({
-    //  success: true,
-    //  message: "User registered successfully",
-    //  data: user,
-    //});
     res.cookie("token", token);
+    return res.json({
+      success: true,
+      message: "User registered successfully",
+      data: user,
+    });
   } catch (error) {
     return res.json("error: " + error);
   }
@@ -84,7 +82,6 @@ route.post("/login", async (req, res) => {
       .json({ error: "Internal server error", details: error.message });
   }
 });
-
 //Creating user routes to fetch users data
 route.get("/user", isAuthenticated, async (req, res) => {
   try {

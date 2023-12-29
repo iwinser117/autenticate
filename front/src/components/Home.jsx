@@ -2,16 +2,9 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Home = (props) => {
-  const { loggedIn, email, setLoggedIn } = props;
   const navigate = useNavigate();
-  const onButtonClick = () => {
-    if (loggedIn) {
-        console.log(loggedIn)
-    } else {
-        navigate("/login")
-        console.log(loggedIn)
-    }
-  };
+  const { loggedIn, email, setLoggedIn } = props;
+  
   const handleLogout = () => {
     localStorage.removeItem("userData");
     localStorage.removeItem("token");
@@ -46,7 +39,6 @@ const Home = (props) => {
             <input className={"inputButton"} type="button" value="Sing Up" />
           </Link>
          </> 
-          
         )}
       </div>  
     </div>
