@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import toast, { Toaster } from "react-hot-toast";
 
-const User = () => {
+const User = ({ handleLogout }) => {
+  const [svgData, setSvgData] = useState("");
   const location = useLocation();
   const userData =
     (location && location.state && location.state[0]) ||
@@ -13,8 +14,37 @@ const User = () => {
     null;
   let token = Cookies.get("token");
 
+  const fetchSvg = async () => {
+    try {
+      let name = (userData && userData.name) || "";
+      const response = await fetch(
+        `https://ui-avatars.com/api/?name=${name}?format=svg&bold=true&rounded=true`
+      );
+
+      if (response.ok) {
+        const svgText = URL.createObjectURL(await response.blob());
+        setSvgData(svgText);
+      } else {
+        console.error("Error al obtener el SVG:", response.status);
+      }
+    } catch (error) {
+      console.error("Error al obtener el SVG:", error);
+    }
+  };
+
+  // Llama a la función para realizar la petición cuando el componente se monta
+  useEffect(() => {
+    fetchSvg();
+  }, [userData]);
+  function cerrarSesion() {
+    toast.error("Cerrando Sesión.");
+    setTimeout(() => {
+      handleLogout();
+    }, 1000);
+  }
+
   function miFuncion() {
-    if (!token) {
+    if (!token || !userData) {
       setTimeout(() => {
         window.location.href = "/";
       }, 3000);
@@ -36,10 +66,19 @@ const User = () => {
     <div className="mainContainer">
       {userData && token ? (
         <div>
-          <h1>User Information</h1>
+          {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
+          <h1 className="titleContainer">User Information</h1>
           <p>Name: {userData.name}</p>
           <p>User ID: {userData._id}</p>
           <p>Email: {userData.email}</p>
+          <input
+            className={"inputButton"}
+            type="button"
+            value="Log out"
+            onClick={() => {
+              cerrarSesion();
+            }}
+          />
         </div>
       ) : (
         <>
@@ -47,6 +86,7 @@ const User = () => {
           <p>Redirigiendo a Pagina de Inicio</p>
         </>
       )}
+      <Toaster />
     </div>
   );
 };

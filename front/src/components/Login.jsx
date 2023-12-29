@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 
 import toast, { Toaster } from "react-hot-toast";
+import BotonNavegacion from './BotonNavegacion';
 
 const Login = ({ onLogin }) => {
   const location = useLocation();
@@ -141,6 +142,9 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className={"mainContainer"}>
+      <div className="">
+        <BotonNavegacion rutaObjetivo={rutaActual === '/login' ? '/register' : '/login'} />
+      </div>
       <div className={"titleContainer"}>
         {rutaActual === "/login" ? <div>Login</div> : <div>Create Record</div>}
       </div>

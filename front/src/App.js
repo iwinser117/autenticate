@@ -1,5 +1,5 @@
 // App.jsx
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
@@ -21,6 +21,7 @@ function App() {
   };
 
   const handleLogout = () => {
+    window.location.href = "/";
     Cookies.remove("token");
     localStorage.removeItem("userData");
     setLoggedIn(false);
@@ -67,7 +68,7 @@ function App() {
             }
           />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/user" element={<User />} />
+          <Route path="/user" element={<User handleLogout={handleLogout} />} />
           <Route path="/register" element={<Login />} />
         </Routes>
       </BrowserRouter>
