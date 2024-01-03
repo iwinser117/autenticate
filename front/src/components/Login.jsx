@@ -8,7 +8,7 @@ import BotonNavegacion from './BotonNavegacion';
 const Login = ({ onLogin }) => {
   const location = useLocation();
   const rutaActual = location.pathname;
-  const defaultUrl = "http://localhost:3007/api/";
+  const defaultUrl = "https://autenticate-production.up.railway.app/api/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
