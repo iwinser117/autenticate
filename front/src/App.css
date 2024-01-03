@@ -68,7 +68,7 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background-image: url("https://img.freepik.com/vector-gratis/fondo-conexion-degradado_52683-116652.jpg?w=996&t=st=1703700347~exp=1703700947~hmac=384fb6db9bd239186e0c48be90ff5add151c73750f0f074c7d3f8baccc386540");
+  background-color: #2d2d5d;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -111,4 +111,14 @@ input {
 .avatar {
   display: block;
   margin: auto;
+}
+.botonNavegacion{
+  position: fixed;
+  top: 18px;
+  right:16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  color: #fafafa;
+  background: cornflowerblue;
 }

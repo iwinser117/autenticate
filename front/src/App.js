@@ -62,7 +62,7 @@ function App() {
             element={
               <Home
                 loggedIn={loggedIn}
-                email={userData ? userData[0]?.email : null}
+                email={userData ? userData[0]?.name : null}
                 setLoggedIn={setLoggedIn}
               />
             }

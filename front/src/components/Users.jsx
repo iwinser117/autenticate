@@ -35,7 +35,7 @@ const User = ({ handleLogout }) => {
   // Llama a la función para realizar la petición cuando el componente se monta
   useEffect(() => {
     fetchSvg();
-  }, [userData]);
+  }, []);
   function cerrarSesion() {
     toast.error("Cerrando Sesión.");
     setTimeout(() => {
@@ -65,21 +65,25 @@ const User = ({ handleLogout }) => {
   return (
     <div className="mainContainer">
       {userData && token ? (
-        <div>
-          {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
-          <h1 className="titleContainer">User Information</h1>
-          <p>Name: {userData.name}</p>
-          <p>User ID: {userData._id}</p>
-          <p>Email: {userData.email}</p>
-          <input
-            className={"inputButton"}
-            type="button"
-            value="Log out"
-            onClick={() => {
-              cerrarSesion();
-            }}
-          />
-        </div>
+        <>
+          <div>
+            {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
+            <h1 className="titleContainer">User Information</h1>
+            <p>Name: {userData.name}</p>
+            <p>User ID: {userData._id}</p>
+            <p>Email: {userData.email}</p>
+          </div>
+          <div className={"inputContainer"}>
+            <input
+              className={"inputButton"}
+              type="button"
+              value="Log out"
+              onClick={() => {
+                cerrarSesion();
+              }}
+            />
+          </div>
+        </>
       ) : (
         <>
           <h1>Sin datos de Sesión</h1>
