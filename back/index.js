@@ -13,7 +13,7 @@ const app = express();
 
 app.use(cookieParser());
 const corsOptions = {
-  "origin": "https://autenticate.vercel.app/",
+  origin: "https://autenticate-bed32g5ts-iwinser117.vercel.app/",
   credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 };
