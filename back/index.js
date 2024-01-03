@@ -13,7 +13,7 @@ const app = express();
 
 app.use(cookieParser());
 const corsOptions = {
-  origin: "https://autenticate-production.up.railway.app/api/",
+  origin: '*',
   credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 };
