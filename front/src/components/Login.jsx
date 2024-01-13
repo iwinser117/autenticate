@@ -103,8 +103,7 @@ const Login = ({ onLogin }) => {
         toast.success("Registro creado exitosamente.", {
           duration: 1000,
         });
-        setTimeout(() => {
-          const data = [];
+        const data = [];
           data.push(createResponse.data);
           const userResponse =  postJSON(
             null,
@@ -115,6 +114,7 @@ const Login = ({ onLogin }) => {
           localStorage.setItem("userData", userResponse);
           const expirationTime = 5 * 60 * 1000;
           Cookies.set('token', createResponse.token, { expires: expirationTime });
+        setTimeout(() => {
           navigate("/user", { state: data });
         }, 1000);
       } else {
