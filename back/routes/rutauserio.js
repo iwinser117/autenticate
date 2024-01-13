@@ -72,11 +72,7 @@ route.post("/login", async (req, res) => {
     );
 
     // Set the token as a cookie
-    res.cookie("token", token, {
-      domain: 'autenticate.vercel.app',  
-      secure: true,             
-      httpOnly: true,          
-    });
+    res.cookie("token", token);
 
     return res.json({ success: true, message: "LoggedIn Successfully" });
   } catch (error) {
