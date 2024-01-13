@@ -44,27 +44,29 @@ const User = ({ handleLogout }) => {
   }
 
   function miFuncion() {
-    if (!token || !userData) {
+    if (!userData) {
       setTimeout(() => {
         window.location.href = "/";
       }, 3000);
       return;
     }
-    const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
 
-    if (decodedToken.exp && decodedToken.exp < currentTime) {
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 3000);
-      return;
+      if (decodedToken.exp && decodedToken.exp < currentTime) {
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+        return;
+      }
     }
     setTimeout(miFuncion, 1000);
   }
   miFuncion();
   return (
     <div className="mainContainer">
-      {userData? (
+      {userData ? (
         <>
           <div>
             {svgData && <img src={svgData} alt="Avatar" className="avatar" />}

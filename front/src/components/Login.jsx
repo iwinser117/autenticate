@@ -64,6 +64,8 @@ const Login = ({ onLogin }) => {
           loginResponse.token
         );
         localStorage.setItem("userData", userResponse);
+        const expirationTime = 5 * 60 * 1000;
+        Cookies.set('token', 'loginResponse.token', { expires: expirationTime });
         onLogin(null, userResponse.user);
         setTimeout(() => {
           navigate("/user", { state: userResponse.user });
