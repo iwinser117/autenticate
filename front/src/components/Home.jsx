@@ -12,19 +12,17 @@ const Home = (props) => {
     setLoggedIn(false);
     navigate("/");
   };
-
+ 
   const fetchSvg = async () => {
     let name = email || "";
     if (!email) {
-      const dataLocal =
-        localStorage.getItem("userData") &&
-        JSON.parse(localStorage.getItem("userData")).user[0];
-
-      name = dataLocal ? dataLocal.name : "";
+      const dataLocal = (localStorage.getItem("userData") &&
+      JSON.parse(localStorage.getItem("userData"))[0])
+      name = dataLocal ? dataLocal.name : ''
     }
     try {
-      if (!name) {
-        return;
+      if(!name){
+        return
       }
       const response = await fetch(
         `https://ui-avatars.com/api/?name=${name}?format=svg&bold=true&rounded=true`
@@ -41,6 +39,7 @@ const Home = (props) => {
     }
   };
 
+ 
   useEffect(() => {
     fetchSvg();
   }, []);
@@ -54,6 +53,7 @@ const Home = (props) => {
       <div className={"buttonContainer"}>
         {loggedIn ? (
           <React.Fragment>
+            
             <div>
               {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
               <p>Hello {email}</p>
