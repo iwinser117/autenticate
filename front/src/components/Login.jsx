@@ -124,7 +124,7 @@ const Login = ({ onLogin }) => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
       };
 
