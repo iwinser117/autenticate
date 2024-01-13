@@ -105,7 +105,7 @@ const Login = ({ onLogin }) => {
         });
         const data = [];
           data.push(createResponse.data);
-          const userResponse =  postJSON(
+          const userResponse = await postJSON(
             null,
             "GET",
             "user",
