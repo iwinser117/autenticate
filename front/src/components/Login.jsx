@@ -9,6 +9,7 @@ const Login = ({ onLogin }) => {
   const location = useLocation();
   const rutaActual = location.pathname;
   const defaultUrl = "https://autenticate-production.up.railway.app/api/";
+  //const defaultUrl = "http://localhost:3007/api/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -124,7 +125,7 @@ const Login = ({ onLogin }) => {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
         },
       };
 

@@ -13,10 +13,11 @@ const app = express();
 
 app.use(cookieParser());
 const corsOptions = {
-  origin: 'https://autenticate.vercel.app',
+  origin: ['https://autenticate.vercel.app'],
   credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 };
+
 app.use(cors(corsOptions))
 app.use(express.json());
 
