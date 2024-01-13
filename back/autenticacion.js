@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 
 const isAuthenticated = async (req, res, next) => {
   try {
-    const token = req.cookies;
-    console.log(token);
+    const token = req.headers.authorization;
+    //console.log(token);
     if (!token) {
       return next("Please login to access the data");
     } else {
