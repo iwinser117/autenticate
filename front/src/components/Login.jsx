@@ -106,7 +106,13 @@ const Login = ({ onLogin }) => {
         setTimeout(() => {
           const data = [];
           data.push(createResponse.data);
-          localStorage.setItem("userData", data);
+          const userResponse =  postJSON(
+            null,
+            "GET",
+            "user",
+            createResponse.token
+          );
+          localStorage.setItem("userData", userResponse);
           const expirationTime = 5 * 60 * 1000;
           Cookies.set('token', createResponse.token, { expires: expirationTime });
           navigate("/user", { state: data });
