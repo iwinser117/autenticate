@@ -63,7 +63,7 @@ const Login = ({ onLogin }) => {
           "user",
           loginResponse.token
         );
-        localStorage.setItem("userData", userResponse);
+        localStorage.setItem("userData", JSON.stringify(userResponse));
         const expirationTime = 5 * 60 * 1000;
         Cookies.set('token', loginResponse.token, { expires: expirationTime });
         onLogin(null, userResponse.user);
@@ -111,7 +111,7 @@ const Login = ({ onLogin }) => {
             "user",
             createResponse.token
           );
-          localStorage.setItem("userData", userResponse);
+          onLogin(null, userResponse.user);
           const expirationTime = 5 * 60 * 1000;
           Cookies.set('token', createResponse.token, { expires: expirationTime });
         setTimeout(() => {
