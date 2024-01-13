@@ -64,7 +64,7 @@ const User = ({ handleLogout }) => {
   miFuncion();
   return (
     <div className="mainContainer">
-      {userData && token ? (
+      {userData? (
         <>
           <div>
             {svgData && <img src={svgData} alt="Avatar" className="avatar" />}

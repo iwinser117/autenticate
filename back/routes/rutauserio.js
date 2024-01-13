@@ -37,6 +37,7 @@ route.post("/register", async (req, res) => {
       success: true,
       message: "User registered successfully",
       data: user,
+      token : token
     });
   } catch (error) {
     return res.json("error: " + error);
@@ -74,7 +75,7 @@ route.post("/login", async (req, res) => {
     // Set the token as a cookie
     res.cookie("token", token);
 
-    return res.json({ success: true, message: "LoggedIn Successfully" });
+    return res.json({ success: true, message: "LoggedIn Successfully", token : token });
   } catch (error) {
     //return res.json('err : ' + error );
     return res

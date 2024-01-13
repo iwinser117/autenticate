@@ -62,6 +62,7 @@ const Login = ({ onLogin }) => {
           "user",
           loginResponse.token
         );
+        localStorage.setItem("userData", userResponse);
         onLogin(null, userResponse.user);
         setTimeout(() => {
           navigate("/user", { state: userResponse.user });
