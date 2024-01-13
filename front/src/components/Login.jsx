@@ -111,7 +111,7 @@ const Login = ({ onLogin }) => {
             "user",
             createResponse.token
           );
-          onLogin(null, userResponse.user);
+          localStorage.setItem("userData", JSON.stringify(userResponse));
           const expirationTime = 5 * 60 * 1000;
           Cookies.set('token', createResponse.token, { expires: expirationTime });
         setTimeout(() => {
