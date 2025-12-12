@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { fetchSvg as fetchAvatar } from "../util";
 
 const Home = (props) => {
   const [svgData, setSvgData] = useState("");
@@ -14,29 +15,10 @@ const Home = (props) => {
   };
  
   const fetchSvg = async () => {
-    let name = email || "";
-    if (!email) {
-      const dataLocal = (localStorage.getItem("userData") &&
-      JSON.parse(localStorage.getItem("userData"))[0])
-      name = dataLocal ? dataLocal.name : ''
-    }
-    try {
-      if(!name){
-        return
-      }
-      const response = await fetch(
-        `https://ui-avatars.com/api/?name=${name}?format=svg&bold=true&rounded=true`
-      );
-
-      if (response.ok) {
-        const svgText = URL.createObjectURL(await response.blob());
-        setSvgData(svgText);
-      } else {
-        console.error("Error al obtener el SVG:", response.status);
-      }
-    } catch (error) {
-      console.error("Error al obtener el SVG:", error);
-    }
+    const stored = localStorage.getItem("userData");
+    const name = email || (stored ? (JSON.parse(stored)[0]?.name || "") : "");
+    const svg = await fetchAvatar(name);
+    if (svg) setSvgData(svg);
   };
 
  
@@ -46,36 +28,35 @@ const Home = (props) => {
 
   return (
     <div className="mainContainer">
-      <div className={"titleContainer"}>
-        <div>Welcome!</div>
-      </div>
-      <div>This is the home page.</div>
-      <div className={"buttonContainer"}>
-        {loggedIn ? (
-          <React.Fragment>
-            
-            <div>
-              {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
-              <p>Hello {email}</p>
+      <div className="homeCard">
+        <div className="homeTitle">Welcome!</div>
+        <div className="homeSubtitle">Autentica para continuar</div>
+        <div className={"buttonContainer"}>
+          {loggedIn ? (
+            <React.Fragment>
+              <div>
+                {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
+                <p className="subtitle">Hola {email}</p>
+              </div>
+              <button
+                className={"inputButton"}
+                type="button"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </React.Fragment>
+          ) : (
+            <div className="homeButtons">
+              <Link to="/login">
+                <button className={"inputButton"} type="button">Log in</button>
+              </Link>
+              <Link to="/register">
+                <button className={"inputButton"} type="button">Sign Up</button>
+              </Link>
             </div>
-            <input
-              className={"inputButton"}
-              type="button"
-              value="Log out"
-              onClick={handleLogout}
-            />
-          </React.Fragment>
-        ) : (
-          <>
-            <Link to="/login">
-              <input className={"inputButton"} type="button" value="Log in" />
-            </Link>
-            O
-            <Link to="/register">
-              <input className={"inputButton"} type="button" value="Sing Up" />
-            </Link>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

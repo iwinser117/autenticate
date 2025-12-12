@@ -7,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
+import Register from "./components/Register.jsx";
 import User from "./components/Users.jsx";
 
 function App() {
@@ -69,7 +70,7 @@ function App() {
           />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/user" element={<User handleLogout={handleLogout} />} />
-          <Route path="/register" element={<Login />} />
+          <Route path="/register" element={<Register onLogin={handleLogin} />} />
         </Routes>
       </BrowserRouter>
       <Toaster />

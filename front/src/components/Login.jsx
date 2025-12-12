@@ -4,167 +4,106 @@ import Cookies from "js-cookie";
 
 import toast, { Toaster } from "react-hot-toast";
 import BotonNavegacion from './BotonNavegacion';
+import { apiRequest, validateEmail, validatePassword, setAuthToken } from "../util";
 
 const Login = ({ onLogin }) => {
   const location = useLocation();
   const rutaActual = location.pathname;
-  const defaultUrl = "https://autenticate-production.up.railway.app/api/";
-  //const defaultUrl = "http://localhost:3007/api/";
+  // UI state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const validateInput = () => {
-    setEmailError("");
-    setPasswordError("");
-
-    if ("" === email) {
-      setEmailError("Please enter your email");
-      return false;
-    }
-
-    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError("Please enter a valid email");
-      return false;
-    }
-
-    if ("" === password) {
-      setPasswordError("Please enter a password");
-      return false;
-    }
-
-    if (password.length < 3) {
-      setPasswordError("The password must be 8 characters or longer");
-      return false;
-    }
-
-    return true;
+    const emailErr = validateEmail(email);
+    const passErr = validatePassword(password);
+    setEmailError(emailErr || "");
+    setPasswordError(passErr || "");
+    return !emailErr && !passErr;
   };
 
   const onButtonClick = async () => {
+    if (loading) return;
     setEmailError("");
     setPasswordError("");
 
-    if (!validateInput()) {
-      return;
-    }
+    if (!validateInput()) return;
 
+    setLoading(true);
     const data = { email, password };
     try {
-      const loginResponse = await postJSON(data, "POST", "login");
-
-      if (loginResponse.success) {
-        const userResponse = await postJSON(
-          null,
-          "GET",
-          "user",
-          loginResponse.token
-        );
+      const loginResponse = await apiRequest({ endpoint: "login", method: "POST", data });
+      if (loginResponse?.success) {
+        const userResponse = await apiRequest({ endpoint: "user", method: "GET", token: loginResponse.token });
         localStorage.setItem("userData", JSON.stringify(userResponse.user));
-        const expirationTime = 5 * 60 * 1000;
-        Cookies.set('token', loginResponse.token, { expires: expirationTime });
-        onLogin(null, userResponse.user);
-        setTimeout(() => {
-          navigate("/user", { state: userResponse.user });
-        }, 1000);
-        toast.success("Ingreso Exitoso.", {
-          duration: 1000,
-        });
+        setAuthToken(loginResponse.token);
+        onLogin(loginResponse.token, userResponse.user);
+        toast.success("Ingreso exitoso", { duration: 1000 });
+        navigate("/user", { state: userResponse.user });
       } else {
         Cookies.remove("token");
-
-        toast.error("Correo o Contraseña incorrecta.");
+        toast.error(loginResponse?.message || "Correo o contraseña incorrecta");
       }
     } catch (error) {
-      console.log("Error:", error);
+      toast.error("Error de conexión. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
   };
   const onClickCreate = async () => {
+    if (loading) return;
     setEmailError("");
     setPasswordError("");
 
-    if (!validateInput()) {
-      return;
-    }
+    const emailValid = validateEmail(email);
+    const passValid = validatePassword(password);
+    const nameValid = (name && name.trim().length >= 2) ? null : "Ingresa tu nombre";
+    setEmailError(emailValid || "");
+    setPasswordError(passValid || "");
+    if (nameValid) toast.error(nameValid);
+    if (emailValid || passValid || nameValid) return;
 
-    const newData = {
-      name,
-      email,
-      password,
-    };
-
+    setLoading(true);
+    const newData = { name, email, password };
     try {
-      const createResponse = await postJSON(newData, "POST", "register");
-
-      if (createResponse.success) {
-        toast.success("Registro creado exitosamente.", {
-          duration: 1000,
-        });
-        const data = [];
-          data.push(createResponse.data);
-          const userResponse = await postJSON(
-            null,
-            "GET",
-            "user",
-            createResponse.token
-          );
-          localStorage.setItem("userData", JSON.stringify(userResponse.user));
-          const expirationTime = 5 * 60 * 1000;
-          Cookies.set('token', createResponse.token, { expires: expirationTime });
-        setTimeout(() => {
-          navigate("/user", { state: data });
-        }, 1000);
+      const createResponse = await apiRequest({ endpoint: "register", method: "POST", data: newData });
+      if (createResponse?.success) {
+        toast.success("Registro creado exitosamente", { duration: 1000 });
+        const userResponse = await apiRequest({ endpoint: "user", method: "GET", token: createResponse.token });
+        localStorage.setItem("userData", JSON.stringify(userResponse.user));
+        setAuthToken(createResponse.token);
+        navigate("/user", { state: userResponse.user });
       } else {
-        createResponse?.message
-          ? toast.error(createResponse.message)
-          : toast.error("Error al crear el registro.");
+        toast.error(createResponse?.message || "Error al crear el registro");
       }
     } catch (error) {
-      console.log("Error:", error);
+      toast.error("Error de conexión. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  async function postJSON(data, metodo, endpoint, token) {
-    try {
-      const url = endpoint ? `${defaultUrl}${endpoint}` : defaultUrl;
-
-      const requestOptions = {
-        method: metodo,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${token}`,
-        },
-      };
-
-      if (metodo !== "GET") {
-        requestOptions.body = JSON.stringify(data);
-      }
-
-      const response = await fetch(url, requestOptions);
-      const result = await response.json();
-
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // postJSON replaced with reusable apiRequest in util
 
   return (
     <div className={"mainContainer"}>
-      <div className="">
-        <BotonNavegacion rutaObjetivo={rutaActual === '/login' ? '/register' : '/login'} />
-      </div>
-      <div className={"titleContainer"}>
-        {rutaActual === "/login" ? <div>Login</div> : <div>Create Record</div>}
-      </div>
-      <br />
-      <div className="inputContainer">
-        {!(rutaActual === "/login") ? (
-          <>
+      <BotonNavegacion rutaObjetivo={rutaActual === '/login' ? '/register' : '/login'} />
+      <div className="authCard">
+        <div className={"titleContainer"}>
+          {rutaActual === "/login" ? "Bienvenido" : "Crear cuenta"}
+        </div>
+        <div className="subtitle">
+          {rutaActual === "/login"
+            ? "Ingresa con tu correo y contraseña"
+            : "Completa los datos para registrarte"}
+        </div>
+
+        {rutaActual !== "/login" ? (
+          <div className="inputContainer">
             <label className="inputLabel">Name</label>
             <input
               type="text"
@@ -173,50 +112,44 @@ const Login = ({ onLogin }) => {
               onChange={(ev) => setName(ev.target.value)}
               className={"inputBox"}
             />
-          </>
+          </div>
         ) : null}
-      </div>
-      <br />
-      <div className={"inputContainer"}>
-        <label className="inputLabel">Email</label>
-        <input
-          type="text"
-          value={email}
-          placeholder="Enter your email here"
-          onChange={(ev) => setEmail(ev.target.value)}
-          className={"inputBox"}
-        />
-        <label className="errorLabel">{emailError}</label>
-      </div>
-      <br />
-      <div className={"inputContainer"}>
-        <label className="inputLabel">Password</label>
-        <input
-          type="password"
-          value={password}
-          placeholder="Enter your password here"
-          onChange={(ev) => setPassword(ev.target.value)}
-          className={"inputBox"}
-        />
-        <label className="errorLabel">{passwordError}</label>
-      </div>
-      <br />
-      <div className={"inputContainer"}>
-        {rutaActual === "/login" ? (
+
+        <div className={"inputContainer"}>
+          <label className="inputLabel">Email</label>
           <input
-            className={"inputButton"}
-            type="button"
-            onClick={onButtonClick}
-            value={"Log in"}
+            type="text"
+            value={email}
+            placeholder="Enter your email here"
+            onChange={(ev) => setEmail(ev.target.value)}
+            className={"inputBox"}
           />
-        ) : (
+          <label className="errorLabel">{emailError}</label>
+        </div>
+
+        <div className={"inputContainer"}>
+          <label className="inputLabel">Password</label>
           <input
-            className={"inputButton"}
-            type="button"
-            onClick={onClickCreate}
-            value={"Sing Up"}
+            type="password"
+            value={password}
+            placeholder="Enter your password here"
+            onChange={(ev) => setPassword(ev.target.value)}
+            className={"inputBox"}
           />
-        )}
+          <label className="errorLabel">{passwordError}</label>
+        </div>
+
+        <div className={"buttonContainer"}>
+          {rutaActual === "/login" ? (
+            <button className={"inputButton"} type="button" onClick={onButtonClick} disabled={loading}>
+              {loading ? "Ingresando..." : "Log in"}
+            </button>
+          ) : (
+            <button className={"inputButton"} type="button" onClick={onClickCreate} disabled={loading}>
+              {loading ? "Creando..." : "Sign Up"}
+            </button>
+          )}
+        </div>
       </div>
       <Toaster />
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { fetchSvg as fetchAvatar, clearAuth } from "../util";
 import toast, { Toaster } from "react-hot-toast";
 
 const User = ({ handleLogout }) => {
@@ -15,21 +16,8 @@ const User = ({ handleLogout }) => {
   let token = Cookies.get("token");
 
   const fetchSvg = async () => {
-    try {
-      let name = (userData && userData.name) || "";
-      const response = await fetch(
-        `https://ui-avatars.com/api/?name=${name}?format=svg&bold=true&rounded=true`
-      );
-
-      if (response.ok) {
-        const svgText = URL.createObjectURL(await response.blob());
-        setSvgData(svgText);
-      } else {
-        console.error("Error al obtener el SVG:", response.status);
-      }
-    } catch (error) {
-      console.error("Error al obtener el SVG:", error);
-    }
+    const svg = await fetchAvatar(userData?.name || "");
+    if (svg) setSvgData(svg);
   };
 
   // Llama a la función para realizar la petición cuando el componente se monta
@@ -39,6 +27,7 @@ const User = ({ handleLogout }) => {
   function cerrarSesion() {
     toast.error("Cerrando Sesión.");
     setTimeout(() => {
+      clearAuth();
       handleLogout();
     }, 1000);
   }
@@ -55,6 +44,7 @@ const User = ({ handleLogout }) => {
       const currentTime = Date.now() / 1000;
 
       if (decodedToken.exp && decodedToken.exp < currentTime) {
+        clearAuth();
         setTimeout(() => {
           window.location.href = "/";
         }, 3000);
@@ -67,30 +57,31 @@ const User = ({ handleLogout }) => {
   return (
     <div className="mainContainer">
       {userData ? (
-        <>
-          <div>
-            {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
-            <h1 className="titleContainer">User Information</h1>
+        <div className="userCard">
+          {svgData && <img src={svgData} alt="Avatar" className="avatar" />}
+          <h1 className="titleContainer">User Information</h1>
+          <div className="userMeta">
             <p>Name: {userData.name}</p>
             <p>User ID: {userData._id}</p>
             <p>Email: {userData.email}</p>
           </div>
-          <div className={"inputContainer"}>
-            <input
+          <div className={"buttonContainer"}>
+            <button
               className={"inputButton"}
               type="button"
-              value="Log out"
               onClick={() => {
                 cerrarSesion();
               }}
-            />
+            >
+              Log out
+            </button>
           </div>
-        </>
+        </div>
       ) : (
-        <>
-          <h1>Sin datos de Sesión</h1>
-          <p>Redirigiendo a Pagina de Inicio</p>
-        </>
+        <div className="userCard">
+          <h1 className="titleContainer">Sin datos de sesión</h1>
+          <p className="subtitle">Redirigiendo a pagina de inicio</p>
+        </div>
       )}
       <Toaster />
     </div>
