@@ -15,11 +15,6 @@ const User = ({ handleLogout }) => {
     null;
   let token = Cookies.get("token");
 
-  const fetchSvg = async () => {
-    const svg = await fetchAvatar(userData?.name || "");
-    if (svg) setSvgData(svg);
-  };
-
   // Llama a la función para realizar la petición cuando el componente se monta
   useEffect(() => {
     let isActive = true;

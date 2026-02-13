@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import Cookies from "js-cookie";
 import BotonNavegacion from "./BotonNavegacion";
 import { apiRequest, validateEmail, validatePassword, validateName, setAuthToken } from "../util";
 

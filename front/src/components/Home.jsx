@@ -14,17 +14,28 @@ const Home = (props) => {
     navigate("/");
   };
  
-  const fetchSvg = async () => {
-    const stored = localStorage.getItem("userData");
-    const name = email || (stored ? (JSON.parse(stored)[0]?.name || "") : "");
-    const svg = await fetchAvatar(name);
-    if (svg) setSvgData(svg);
-  };
-
- 
   useEffect(() => {
-    fetchSvg();
-  }, []);
+    let isActive = true;
+    let currentUrl = "";
+
+    const loadAvatar = async () => {
+      const stored = localStorage.getItem("userData");
+      const name = email || (stored ? (JSON.parse(stored)[0]?.name || "") : "");
+      const svg = await fetchAvatar(name);
+      if (!isActive) return;
+      if (svg) {
+        currentUrl = svg;
+        setSvgData(svg);
+      }
+    };
+
+    loadAvatar();
+
+    return () => {
+      isActive = false;
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+    };
+  }, [email]);
 
   return (
     <div className="mainContainer">
