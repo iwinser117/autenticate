@@ -22,8 +22,25 @@ const User = ({ handleLogout }) => {
 
   // Llama a la función para realizar la petición cuando el componente se monta
   useEffect(() => {
-    fetchSvg();
-  }, []);
+    let isActive = true;
+    let currentUrl = "";
+
+    const loadAvatar = async () => {
+      const svg = await fetchAvatar(userData?.name || "");
+      if (!isActive) return;
+      if (svg) {
+        currentUrl = svg;
+        setSvgData(svg);
+      }
+    };
+
+    loadAvatar();
+
+    return () => {
+      isActive = false;
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+    };
+  }, [userData?.name]);
   function cerrarSesion() {
     toast.error("Cerrando Sesión.");
     setTimeout(() => {

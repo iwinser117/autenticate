@@ -42,13 +42,23 @@ export async function apiRequest({
   } catch {
     json = { success: false, message: "Respuesta inválida del servidor" };
   }
+  const message = json?.message || json?.error || "Error en la solicitud";
+
   if (!res.ok) {
     return {
       success: false,
       status: res.status,
-      message: json?.message || "Error en la solicitud",
+      message,
     };
   }
+
+  if (json?.success === false) {
+    return {
+      ...json,
+      message,
+    };
+  }
+
   return json;
 }
 

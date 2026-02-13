@@ -39,6 +39,10 @@ const Login = ({ onLogin }) => {
       const loginResponse = await apiRequest({ endpoint: "login", method: "POST", data });
       if (loginResponse?.success) {
         const userResponse = await apiRequest({ endpoint: "user", method: "GET", token: loginResponse.token });
+        if (userResponse?.success === false || !userResponse?.user) {
+          toast.error(userResponse?.message || "No se pudo obtener el usuario");
+          return;
+        }
         localStorage.setItem("userData", JSON.stringify(userResponse.user));
         setAuthToken(loginResponse.token);
         onLogin(loginResponse.token, userResponse.user);
@@ -74,6 +78,10 @@ const Login = ({ onLogin }) => {
       if (createResponse?.success) {
         toast.success("Registro creado exitosamente", { duration: 1000 });
         const userResponse = await apiRequest({ endpoint: "user", method: "GET", token: createResponse.token });
+        if (userResponse?.success === false || !userResponse?.user) {
+          toast.error(userResponse?.message || "No se pudo obtener el usuario");
+          return;
+        }
         localStorage.setItem("userData", JSON.stringify(userResponse.user));
         setAuthToken(createResponse.token);
         navigate("/user", { state: userResponse.user });

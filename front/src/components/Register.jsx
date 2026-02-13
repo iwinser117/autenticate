@@ -32,6 +32,10 @@ const Register = ({ onLogin }) => {
 			if (res?.success) {
 				toast.success("Registro creado exitosamente", { duration: 1000 });
 				const userRes = await apiRequest({ endpoint: "user", method: "GET", token: res.token });
+				if (userRes?.success === false || !userRes?.user) {
+					toast.error(userRes?.message || "No se pudo obtener el usuario");
+					return;
+				}
 				localStorage.setItem("userData", JSON.stringify(userRes.user));
 				setAuthToken(res.token);
 				onLogin?.(res.token, userRes.user);
