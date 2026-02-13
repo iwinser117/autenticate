@@ -13,6 +13,20 @@ route.post("/register", async (req, res) => {
     const name = req.body.name;
     const password = req.body.password;
     const email = req.body.email;
+
+    //validaciones data
+    if (typeof name !== "string" || typeof password !== "string" || typeof email !== "string") {
+      return res.json({ message: "Invalid data type" });
+    }
+
+    if (name.length < 4 || name.length > 20) {
+      return res.json({ message: "Name should be between 4 and 20 characters" });
+    } else if (email.length > 50) {
+      return res.json({ message: "Email should be maximum of 50 characters" });
+    } else if (password.length < 8 || password.length > 20) {
+      return res.json({ message: "Password should be between 8 and 20 characters" });
+    }
+
     //Check emptyness of the incoming data
     if (!name || !email || !password) {
       return res.json({ message: "Please enter all the details" });
